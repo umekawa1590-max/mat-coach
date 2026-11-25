@@ -1,1098 +1,612 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#101b31">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10213b">
 <title>MAT AI COACH</title>
-
 <style>
-:root {
-  --bg:#101b31;
-  --panel:#192740;
-  --panel2:#263852;
-  --blue:#4e9cff;
-  --green:#36c995;
-  --yellow:#f3bd55;
-  --red:#ed6875;
-  --text:#f5f7fb;
-  --muted:#a6b4c9;
-}
+:root{--navy:#10213b;--blue:#2463eb;--cyan:#38bdf8;--bg:#f3f6fb;--ink:#17243a;--muted:#65748b;--line:#dce4ef;--green:#0b8f68;--red:#c24141}
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;
-}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
+header{background:linear-gradient(120deg,#10213b,#173c69);color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-weight:900;letter-spacing:.08em;font-size:20px}
+.brand small{display:block;font-size:10px;letter-spacing:.22em;color:#a9c9ef;margin-top:3px}
+main{max-width:1120px;margin:20px auto;padding:0 16px 40px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr);gap:16px}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 5px 18px #18365a0b}
+h2{font-size:16px;margin:0 0 13px}
+.muted{color:var(--muted);font-size:12px;line-height:1.6}
+video{width:100%;background:#0b1422;border-radius:13px;aspect-ratio:16/9;object-fit:contain}
+.preview-wrap{position:relative}
+.live{position:absolute;top:10px;left:10px;background:#d93030;color:white;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:800}
+.controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
 button,select,input{font:inherit}
-button{
-  border:0;border-radius:11px;padding:13px 17px;
-  font-weight:700;cursor:pointer;
-}
-button:disabled{opacity:.4;cursor:not-allowed}
+button{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cursor:pointer}
 .primary{background:var(--blue);color:white}
-.success{background:var(--green);color:#102c23}
-.warning{background:var(--yellow);color:#30220b}
-.danger{background:var(--red);color:white}
-.secondary{background:var(--panel2);color:white}
-.small{padding:9px 13px;font-size:12px}
-header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:15px 22px;border-bottom:1px solid #30415b;
-}
-.logo{font-size:23px;font-weight:900;letter-spacing:1px}
-.logo span{color:var(--blue)}
-.subtitle{font-size:11px;color:var(--muted)}
-.header-right{display:flex;align-items:center;gap:10px}
-.status{
-  background:#293951;padding:7px 13px;
-  border-radius:30px;font-size:12px;
-}
-.status.live{background:#174d3e;color:#71f0bf}
-main{max-width:1450px;margin:auto;padding:17px}
-.panel{
-  background:var(--panel);border:1px solid #30415b;
-  border-radius:14px;padding:15px;
-}
-.panel-title{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:700}
-select,input{
-  width:100%;padding:12px;color:white;
-  background:var(--panel2);border:1px solid #405573;
-  border-radius:9px;outline:none;
-}
-.top-controls{
-  display:grid;grid-template-columns:1.5fr 1fr 1fr;
-  gap:12px;margin-bottom:14px;
-}
-.camera-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.camera-panel{
-  background:var(--panel);border:1px solid #30415b;
-  border-radius:14px;overflow:hidden;
-}
-.camera-heading{
-  display:flex;justify-content:space-between;
-  padding:13px 15px;font-size:14px;font-weight:700;
-}
-.camera-heading small{color:var(--muted);font-weight:400}
-.screen{
-  position:relative;background:#070d17;aspect-ratio:16/9;
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-}
-.screen video{width:100%;height:100%;object-fit:contain}
-.placeholder{text-align:center;color:#8292aa;padding:20px}
-.symbol{font-size:40px;margin-bottom:8px}
-.live-label,.delay-label{
-  position:absolute;top:10px;left:10px;
-  padding:5px 9px;border-radius:5px;font-size:11px;font-weight:800;
-}
-.live-label{background:#c92e3d}
-.delay-label{background:#235a94}
-.screen-info{
-  padding:9px 13px;color:var(--muted);
-  font-size:11px;display:flex;justify-content:space-between;
-}
-.progress-area{
-  margin-top:14px;background:var(--panel);
-  border-radius:12px;padding:14px;
-}
-.progress-line{
-  background:#34435a;height:7px;border-radius:20px;
-  overflow:hidden;margin-top:9px;
-}
-.progress-fill{
-  background:var(--blue);height:100%;width:0%;
-  transition:width .1s linear;
-}
-.advice-panel{
-  margin-top:14px;background:var(--panel);
-  border:1px solid #30415b;border-radius:14px;padding:17px;
-}
-.advice-title{
-  display:flex;justify-content:space-between;
-  font-weight:800;font-size:17px;margin-bottom:13px;
-}
-.advice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.advice-box{
-  background:#153d35;border:1px solid #246b58;
-  border-radius:12px;padding:15px;min-height:110px;
-}
-.advice-box.improve{background:#40351f;border-color:#79602c}
-.advice-box h3{font-size:14px;margin:0 0 10px}
-.advice-box ul{padding-left:20px;margin:0;line-height:1.8;font-size:14px}
-.empty-advice{color:var(--muted);font-size:13px;line-height:1.8}
-.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.controls button{flex:1;min-width:130px}
-.notice{
-  margin-top:13px;background:#202f47;
-  padding:13px;border-radius:10px;
-  font-size:12px;line-height:1.8;color:var(--muted);
-}
-footer{text-align:center;color:#71829b;padding:20px;font-size:11px}
-#settingsModal{
-  display:none;position:fixed;inset:0;background:#000c;
-  z-index:100;align-items:center;justify-content:center;padding:15px;
-}
-.modal{
-  background:var(--panel);border:1px solid #405573;
-  border-radius:17px;padding:22px;width:min(500px,100%);
-  max-height:90vh;overflow:auto;
-}
-.modal h2{margin-top:0}
-.modal label{display:block;margin:15px 0 7px;font-size:13px;color:var(--muted)}
-.modal p{font-size:12px;line-height:1.8;color:var(--muted)}
-.modal-actions{display:flex;gap:10px;margin-top:17px}
-.modal-actions button{flex:1}
-.check-row{display:flex;gap:9px;align-items:center;font-size:12px;margin-top:12px}
-.check-row input{width:auto}
-.connection-result{font-size:12px;margin-top:10px;line-height:1.7}
-@media(max-width:700px){
-  header{padding:12px}
-  .logo{font-size:18px}
-  main{padding:10px}
-  .top-controls{grid-template-columns:1fr}
-  .camera-grid,.advice-grid{grid-template-columns:1fr}
-  .header-right .status{display:none}
-  .controls button{min-width:100%}
+.dark{background:var(--navy);color:white}
+.light{background:#edf2f9;color:#20334e}
+.danger{background:#fff0f0;color:var(--red)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:6px;margin:12px 0}
+.field label{font-size:12px;font-weight:800;color:#41516a}
+select,input[type=text],input[type=password],textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:white;color:var(--ink)}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:10px}
+.row>*{flex:1;min-width:0}
+.status{padding:10px 12px;background:#eef5ff;border-radius:10px;font-size:12px;line-height:1.6;margin-top:12px}
+.status.good{background:#eaf8f2;color:#08694e}
+.status.warn{background:#fff7e8;color:#875700}
+.status.err{background:#fff0f0;color:#a12e2e}
+.result{margin-top:15px}
+.resultbox{border-radius:13px;padding:13px;margin-top:10px}
+.goodbox{background:#eaf8f2}
+.improvebox{background:#fff6e8}
+.safetybox{background:#fff0f0}
+.resultbox h3{font-size:13px;margin:0 0 8px}
+.resultbox ul{margin:0;padding-left:20px;font-size:13px;line-height:1.7}
+.resultbox p{font-size:13px;line-height:1.7;margin:0}
+.hidden{display:none!important}
+.foot{max-width:1120px;margin:-22px auto 28px;padding:0 16px;color:var(--muted);font-size:11px;line-height:1.7}
+@media(max-width:760px){
+main{grid-template-columns:1fr;margin-top:12px}
+header{padding:14px 16px}
+.brand{font-size:18px}
 }
 </style>
 </head>
-
 <body>
 
 <header>
-  <div>
-    <div class="logo">MAT <span>AI</span> COACH</div>
-    <div class="subtitle">中学校体育・マット運動 AIコーチ</div>
+  <div class="brand">
+    MAT AI COACH
+    <small>CREATE · PRACTICE · IMPROVE</small>
   </div>
-  <div class="header-right">
-    <div id="status" class="status">待機中</div>
-    <button class="secondary small" onclick="openSettings()">⚙ 設定</button>
-  </div>
+  <div style="font-size:11px;color:#c5d9f3">中学校体育・マット運動</div>
 </header>
 
 <main>
 
-<div class="top-controls">
-  <div class="panel">
-    <div class="panel-title">① 分析する技</div>
-    <select id="skill">
-      <optgroup label="前転系">
-        <option>前転</option>
-        <option>開脚前転</option>
-        <option>伸膝前転</option>
-        <option>跳び前転</option>
-        <option>倒立前転</option>
-      </optgroup>
-      <optgroup label="後転系">
-        <option>後転</option>
-        <option>開脚後転</option>
-        <option>伸膝後転</option>
-        <option>後転倒立</option>
-      </optgroup>
-      <optgroup label="倒立系">
-        <option>倒立</option>
-        <option>壁倒立</option>
-        <option>倒立ブリッジ</option>
-        <option>ブリッジ</option>
-      </optgroup>
-      <optgroup label="回転系">
-        <option>側方倒立回転</option>
-        <option>ロンダート</option>
-        <option>前方倒立回転</option>
-        <option>後方倒立回転</option>
-      </optgroup>
-      <optgroup label="その他">
-        <option>水平バランス</option>
-        <option>片足平均立ち</option>
-        <option>その他</option>
-      </optgroup>
+<section class="panel">
+  <h2>演技撮影・スロー再生</h2>
+
+  <div class="preview-wrap">
+    <video id="camera" autoplay muted playsinline></video>
+    <span id="liveBadge" class="live hidden">● LIVE</span>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="cameraFacing">カメラ</label>
+      <select id="cameraFacing">
+        <option value="environment">背面カメラ</option>
+        <option value="user">前面カメラ</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="sensitivity">動き検出</label>
+      <select id="sensitivity">
+        <option value="low">低め（誤検出を抑える）</option>
+        <option value="medium" selected>標準</option>
+        <option value="high">高め（小さな動きも検出）</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="startBtn" class="primary">カメラ開始</button>
+    <button id="stopBtn" class="light" disabled>撮影終了</button>
+    <button id="manualBtn" class="dark" disabled>演技を手動で記録</button>
+  </div>
+
+  <div id="status" class="status">
+    先生の設定を行い、カメラを開始してください。横向きでの使用を推奨します。
+  </div>
+
+  <div class="result">
+    <h2 style="margin-top:18px">演技の再生</h2>
+    <video id="playback" controls playsinline class="hidden"></video>
+
+    <div class="controls">
+      <button id="analyzeBtn" class="primary" disabled>この演技をAI分析</button>
+      <button id="discardBtn" class="light" disabled>動画を破棄</button>
+    </div>
+
+    <p class="muted">
+      演技終了を検出すると約5秒後に0.5倍速で再生します。
+      動画はこの画面のメモリ上で扱い、端末へ保存しません。
+    </p>
+  </div>
+</section>
+
+<aside class="panel">
+  <h2>授業設定</h2>
+
+  <div class="field">
+    <label for="technique">練習する技</label>
+    <select id="technique"></select>
+  </div>
+
+  <div class="field">
+    <label for="customTechnique">技を追加</label>
+    <div class="row">
+      <input id="customTechnique" type="text" placeholder="例：伸膝前転">
+      <button id="addTechnique" class="light">追加</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="grade">対象</label>
+    <select id="grade">
+      <option>中学1年生</option>
+      <option>中学2年生</option>
+      <option>中学3年生</option>
+      <option>中学生</option>
     </select>
   </div>
 
-  <div class="panel">
-    <div class="panel-title">② カメラの向き</div>
-    <select id="facing">
-      <option value="environment">背面カメラ</option>
-      <option value="user">前面カメラ</option>
-    </select>
+  <div class="field">
+    <label for="notes">先生からの補足（任意）</label>
+    <textarea id="notes" placeholder="例：手の着き方と着地姿勢を重点的に見てください。"></textarea>
   </div>
 
-  <div class="panel">
-    <div class="panel-title">③ スロー再生</div>
-    <select id="speed">
-      <option value="0.5">0.5倍速</option>
-    </select>
-    <div style="font-size:11px;color:var(--muted);margin-top:7px">
-      演技終了から5秒後に再生
-    </div>
-  </div>
-</div>
+  <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
 
-<div class="camera-grid">
-  <section class="camera-panel">
-    <div class="camera-heading">
-      <span>📹 撮影映像</span>
-      <small id="liveStatus">カメラ未起動</small>
-    </div>
-    <div class="screen">
-      <video id="cameraVideo" autoplay muted playsinline></video>
-      <div class="placeholder" id="cameraPlaceholder">
-        <div class="symbol">📷</div>
-        カメラを起動してください
-      </div>
-      <div class="live-label" id="liveLabel" style="display:none">LIVE</div>
-    </div>
-    <div class="screen-info">
-      <span>リアルタイム撮影</span>
-      <span id="motionStatus">動作検出：停止</span>
-    </div>
-  </section>
+  <h2>先生用接続設定</h2>
 
-  <section class="camera-panel">
-    <div class="camera-heading">
-      <span>▶ スロー再生映像</span>
-      <small id="replayStatus">待機中</small>
-    </div>
-    <div class="screen">
-      <video id="replayVideo" playsinline controls></video>
-      <div class="placeholder" id="replayPlaceholder">
-        <div class="symbol">🎬</div>
-        演技後に自動再生されます
-      </div>
-      <div class="delay-label">SLOW 0.5×</div>
-    </div>
-    <div class="screen-info">
-      <span>5秒後に自動再生</span>
-      <span>0.5倍速</span>
-    </div>
-  </section>
-</div>
+  <div class="field">
+    <label for="serverToken">アプリ利用コード</label>
+    <input id="serverToken" type="password" autocomplete="off" placeholder="先生から配布されたコード">
+  </div>
 
-<div class="progress-area">
-  <div style="display:flex;justify-content:space-between;gap:10px">
-    <strong id="processText" style="font-size:13px">撮影開始を待っています</strong>
-    <span id="countdown" style="font-size:12px;color:var(--blue)">--</span>
-  </div>
-  <div class="progress-line">
-    <div class="progress-fill" id="progressFill"></div>
-  </div>
-</div>
+  <p class="muted">
+    Gemini APIキーはここには入力しません。学校側でサーバーに設定します。
+  </p>
 
-<div class="advice-panel">
-  <div class="advice-title">
-    <span>🤖 AIアドバイス</span>
-    <span id="aiStatus" style="font-size:11px;color:var(--muted);font-weight:400">
-      接続未設定
-    </span>
-  </div>
-  <div class="advice-grid">
-    <div class="advice-box">
-      <h3>🟢 よかったところ</h3>
-      <div id="goodAdvice" class="empty-advice">
-        AIの分析結果がここに表示されます。
-      </div>
-    </div>
-    <div class="advice-box improve">
-      <h3>🟡 次の改善ポイント</h3>
-      <div id="improveAdvice" class="empty-advice">
-        次の演技に生かせるポイントを表示します。
-      </div>
-    </div>
-  </div>
-  <div id="summary" style="margin-top:12px;color:#a6cfff;font-size:13px"></div>
-  <div id="safetyWarning" style="margin-top:10px;color:#ff9a9a;font-size:13px"></div>
-</div>
-
-<div class="controls">
-  <button class="success" id="startButton" onclick="startCamera()">
-    ▶ 撮影・AI分析を開始
+  <button id="saveSettings" class="light" style="width:100%">
+    利用コードをこの端末に設定
   </button>
-  <button class="warning" id="manualButton" onclick="manualEnd()" disabled>
-    ■ 演技終了（手動）
-  </button>
-  <button class="secondary" id="pauseButton" onclick="pauseCamera()" disabled>
-    Ⅱ 一時停止
-  </button>
-  <button class="danger" id="stopButton" onclick="stopCamera()" disabled>
-    撮影を終了
-  </button>
-</div>
 
-<div class="notice">
-  <strong>📌 使用上の注意</strong><br>
-  ・iPadのカメラに生徒の全身が映るように設置してください。<br>
-  ・演技検出は簡易的な映像変化によるものです。正確な人体姿勢検出ではありません。<br>
-  ・AIの助言は参考情報です。先生の指導と組み合わせてください。<br>
-  ・動画はAI分析のために外部送信されます。端末内やアプリ内には保存しません。<br>
-  ・AIサービス側でのデータの取り扱いは別途確認してください。<br>
-  ・学校の承認を得る前に生徒の映像を送信しないでください。
-</div>
+  <div id="resultArea" class="hidden">
+    <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+
+    <h2>AIコーチからのアドバイス</h2>
+
+    <div id="observation" class="resultbox" style="background:#eef5ff"></div>
+    <div id="goodPoints" class="resultbox goodbox"></div>
+    <div id="improvements" class="resultbox improvebox"></div>
+    <div id="safety" class="resultbox safetybox hidden"></div>
+
+    <p id="confidence" class="muted"></p>
+  </div>
+</aside>
 
 </main>
 
-<footer>MAT AI COACH | Physical Education Support System</footer>
-
-<!-- AI設定 -->
-<div id="settingsModal">
-  <div class="modal">
-    <h2>⚙ AI接続設定</h2>
-    <p>
-      Gemini APIの無料枠を利用します。
-      Google AI Studioで取得したAPIキーを入力してください。
-      初回設定後は、この端末に保存して次回からの入力を省略できます。
-    </p>
-
-    <label>Gemini APIキー</label>
-    <input type="password" id="apiKey" placeholder="APIキーを入力">
-
-    <label>AIモデル</label>
-    <select id="model">
-      <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite（無料枠対応）</option>
-    </select>
-
-    <label>演技検出感度</label>
-    <select id="sensitivity">
-      <option value="low">低：大きな動きのみ</option>
-      <option value="medium" selected>標準</option>
-      <option value="high">高：小さな動きも検出</option>
-    </select>
-
-    <label class="check-row">
-      <input type="checkbox" id="rememberKey" checked>
-      このiPadにAPIキーを保存する
-    </label>
-
-    <p>
-      ⚠ APIキーはブラウザ内に保存されます。
-      この方式は試作・個人テスト向けです。
-      公開サイトや学校の本格運用では、キーの漏えいを防ぐためバックエンド方式に変更してください。
-    </p>
-
-    <div class="modal-actions">
-      <button class="secondary" onclick="closeSettings()">閉じる</button>
-      <button class="primary" onclick="saveSettings()">設定を保存</button>
-    </div>
-
-    <button class="success" style="width:100%;margin-top:12px" onclick="testConnection()">
-      AI接続テスト
-    </button>
-
-    <button class="secondary small" style="width:100%;margin-top:10px" onclick="deleteKey()">
-      保存したAPIキーを削除
-    </button>
-
-    <div id="connectionResult" class="connection-result"></div>
-  </div>
+<div class="foot">
+注意：動き検出は画面全体の変化を使う簡易方式です。
+人の姿勢を認識して演技を確定するものではなく、周囲の人や照明でも反応する場合があります。
+AIの助言は学習の参考情報であり、教師の観察・安全確認に代わるものではありません。
 </div>
 
-<canvas id="motionCanvas" width="160" height="90" style="display:none"></canvas>
-
 <script>
-"use strict";
-
 const $ = id => document.getElementById(id);
 
-const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
-const MAX_VIDEO_SIZE = 8 * 1024 * 1024;
+const defaultTechniques = [
+ "前転","開脚前転","伸膝前転","後転","開脚後転","伸膝後転",
+ "倒立前転","側方倒立回転","ロンダート","ブリッジ","頭倒立","壁倒立"
+];
+
+let techniques = [...defaultTechniques];
 
 let stream = null;
 let recorder = null;
 let chunks = [];
-let previousFrame = null;
+let clipUrl = null;
+let detecting = false;
+let motionActive = false;
+let lastMotionAt = 0;
+let clipStartedAt = 0;
+let detectorTimer = null;
+let quietTimer = null;
+let currentBlob = null;
+let lastFrame = null;
+let motionScore = 0;
+let isManual = false;
 
-let apiKey = localStorage.getItem("mat_ai_api_key") || "";
-let model = "gemini-3.1-flash-lite";
+const camera = $("camera");
+const playback = $("playback");
 
-let active = false;
-let paused = false;
-let recording = false;
-let mode = "idle";
-
-let motionCount = 0;
-let stillSince = null;
-let motionStarted = null;
-let detectionFrame = null;
-let replayURL = null;
-let timerId = null;
-let recorderStopReason = "auto";
-
-const canvas = $("motionCanvas");
-const ctx = canvas.getContext("2d", {willReadFrequently:true});
-const cameraVideo = $("cameraVideo");
-const replayVideo = $("replayVideo");
-
-if (apiKey) $("apiKey").value = apiKey;
-if (apiKey) $("aiStatus").textContent = "APIキー設定済み";
-
-/* 設定 */
-
-function openSettings() {
-  $("settingsModal").style.display = "flex";
-  $("apiKey").value = apiKey;
+function status(message, type="") {
+  $("status").textContent = message;
+  $("status").className = "status " + type;
 }
 
-function closeSettings() {
-  $("settingsModal").style.display = "none";
+function renderTechniques() {
+  $("technique").innerHTML = "";
+
+  techniques.forEach(t => {
+    const o = document.createElement("option");
+    o.value = t;
+    o.textContent = t;
+    $("technique").append(o);
+  });
 }
 
-function saveSettings() {
-  const key = $("apiKey").value.trim();
+renderTechniques();
 
-  if (!key) {
-    alert("APIキーを入力してください。");
+$("addTechnique").onclick = () => {
+  const value = $("customTechnique").value.trim();
+
+  if (!value) return;
+
+  if (!techniques.includes(value)) {
+    techniques.push(value);
+  }
+
+  renderTechniques();
+  $("technique").value = value;
+  $("customTechnique").value = "";
+};
+
+$("saveSettings").onclick = () => {
+  const token = $("serverToken").value.trim();
+
+  if (!token) {
+    status("利用コードを入力してください。", "warn");
     return;
   }
 
-  apiKey = key;
-  model = $("model").value;
+  sessionStorage.setItem("matCoachToken", token);
+  $("serverToken").value = "";
 
-  if ($("rememberKey").checked) {
-    localStorage.setItem("mat_ai_api_key", apiKey);
-  } else {
-    localStorage.removeItem("mat_ai_api_key");
-  }
-
-  closeSettings();
-  $("aiStatus").textContent = "AI接続設定済み";
-}
-
-function deleteKey() {
-  localStorage.removeItem("mat_ai_api_key");
-  apiKey = "";
-  $("apiKey").value = "";
-  $("rememberKey").checked = false;
-  $("aiStatus").textContent = "接続未設定";
-  $("connectionResult").textContent = "保存したAPIキーを削除しました。";
-}
-
-function setStatus(text, live=false) {
-  $("status").textContent = text;
-  $("status").className = "status" + (live ? " live" : "");
-}
-
-function setProcess(text) {
-  $("processText").textContent = text;
-}
-
-function setAIStatus(text) {
-  $("aiStatus").textContent = text;
-}
-
-function setProgress(value) {
-  $("progressFill").style.width =
-    Math.max(0,Math.min(100,value)) + "%";
-}
-
-function getThreshold() {
-  const v = $("sensitivity").value;
-  if (v === "low") return 20;
-  if (v === "high") return 7;
-  return 12;
-}
-
-/* API接続テスト */
-
-async function testConnection() {
-  const key = $("apiKey").value.trim();
-
-  if (!key) {
-    $("connectionResult").textContent = "APIキーを入力してください。";
-    return;
-  }
-
-  $("connectionResult").textContent = "AIに接続しています...";
-
-  try {
-    const response = await fetch(
-      API_URL + $("model").value + ":generateContent",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-goog-api-key":key
-        },
-        body:JSON.stringify({
-          contents:[{
-            parts:[{text:"日本語で「接続成功」とだけ答えてください。"}]
-          }]
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error?.message || "接続に失敗しました。");
-    }
-
-    $("connectionResult").textContent =
-      "✅ AI接続成功！このAPIキーを保存して利用できます。";
-
-  } catch (e) {
-    $("connectionResult").textContent =
-      "❌ 接続エラー：" + e.message;
-  }
-}
-
-/* カメラ */
+  status("このタブの間、利用コードを設定しました。", "good");
+};
 
 async function startCamera() {
-  if (active) return;
-
-  if (!apiKey) {
-    openSettings();
-    $("connectionResult").textContent =
-      "最初にAPIキーを設定してください。";
-    return;
-  }
-
-  if (!navigator.mediaDevices?.getUserMedia ||
-      !window.MediaRecorder) {
-    alert("このブラウザではカメラ撮影に対応していません。HTTPSのSafariでお試しください。");
-    return;
-  }
-
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      audio:false,
-      video:{
-        facingMode:{ideal:$("facing").value},
-        width:{ideal:640},
-        height:{ideal:360},
-        frameRate:{ideal:24,max:30}
+      audio: false,
+      video: {
+        facingMode: { ideal: $("cameraFacing").value },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
       }
     });
 
-    cameraVideo.srcObject = stream;
-    await cameraVideo.play();
+    camera.srcObject = stream;
+    await camera.play();
 
-    active = true;
-    paused = false;
-    mode = "idle";
-    previousFrame = null;
+    $("liveBadge").classList.remove("hidden");
+    $("startBtn").disabled = true;
+    $("stopBtn").disabled = false;
+    $("manualBtn").disabled = false;
 
-    $("cameraPlaceholder").style.display = "none";
-    $("liveLabel").style.display = "block";
-    $("liveStatus").textContent = "撮影中";
-    $("motionStatus").textContent = "動作検出：待機中";
+    startDetector();
 
-    $("startButton").disabled = true;
-    $("manualButton").disabled = false;
-    $("pauseButton").disabled = false;
-    $("stopButton").disabled = false;
+    status("撮影中です。演技を始めると動きを検出して記録します。", "good");
 
-    setStatus("撮影中",true);
-    setProcess("演技を検出しています");
-    setProgress(0);
-
-    detectMotion();
-
-  } catch(e) {
-    alert("カメラを起動できませんでした。\n" + e.message);
+  } catch (e) {
+    status("カメラを開始できません。Safariのカメラ許可とHTTPS接続を確認してください。" + e.message, "err");
   }
 }
-
-/* 動作検出 */
-
-function detectMotion() {
-  if (!active || paused) return;
-
-  if (cameraVideo.readyState >= 2) {
-    ctx.drawImage(cameraVideo,0,0,canvas.width,canvas.height);
-    const frame = ctx.getImageData(
-      0,0,canvas.width,canvas.height
-    ).data;
-
-    if (previousFrame) {
-      let diff = 0;
-      let count = 0;
-
-      for (let i=0;i<frame.length;i+=16) {
-        diff += Math.abs(frame[i]-previousFrame[i]);
-        diff += Math.abs(frame[i+1]-previousFrame[i+1]);
-        diff += Math.abs(frame[i+2]-previousFrame[i+2]);
-        count += 3;
-      }
-
-      const average = diff/count;
-      const threshold = getThreshold();
-
-      if (mode === "idle") {
-        motionCount = average > threshold ?
-          motionCount+1 : Math.max(0,motionCount-1);
-
-        if (motionCount >= 2) beginRecording();
-      }
-
-      if (mode === "recording") {
-        if (average < threshold*0.45) {
-          if (!stillSince) stillSince = Date.now();
-
-          if (Date.now()-stillSince >= 1800 &&
-              Date.now()-motionStarted >= 1200) {
-            finishRecording();
-          }
-        } else {
-          stillSince = null;
-        }
-
-        if (Date.now()-motionStarted >= 10000) {
-          finishRecording();
-        }
-      }
-    }
-
-    previousFrame = new Uint8ClampedArray(frame);
-  }
-
-  detectionFrame = requestAnimationFrame(detectMotion);
-}
-
-/* 録画 */
-
-function getMimeType() {
-  const types = [
-    "video/mp4",
-    "video/mp4;codecs=avc1",
-    "video/webm;codecs=vp8",
-    "video/webm"
-  ];
-
-  return types.find(t=>MediaRecorder.isTypeSupported(t)) || "";
-}
-
-function beginRecording() {
-  if (!active || paused || mode !== "idle") return;
-
-  const mime = getMimeType();
-
-  if (!mime) {
-    setProcess("対応する録画形式がありません");
-    return;
-  }
-
-  chunks = [];
-
-  try {
-    recorder = new MediaRecorder(stream,{
-      mimeType:mime,
-      videoBitsPerSecond:450000
-    });
-
-    recorder.ondataavailable = e => {
-      if (e.data && e.data.size) chunks.push(e.data);
-    };
-
-    recorder.onstop = handleRecordingStopped;
-    recorder.start(300);
-
-    recording = true;
-    mode = "recording";
-    motionStarted = Date.now();
-    stillSince = null;
-    motionCount = 0;
-
-    $("motionStatus").textContent = "動作検出：演技中";
-    setStatus("演技検出中",true);
-    setProcess("演技を撮影しています");
-
-  } catch(e) {
-    console.error(e);
-    mode = "idle";
-    setProcess("録画を開始できませんでした");
-  }
-}
-
-function finishRecording() {
-  if (!recording || !recorder) return;
-
-  recording = false;
-  mode = "waiting";
-
-  $("motionStatus").textContent = "動作検出：待機中";
-  setStatus("演技終了",true);
-  setProcess("演技終了！5秒後に再生します");
-
-  if (recorder.state !== "inactive") recorder.stop();
-}
-
-function manualEnd() {
-  if (recording) {
-    finishRecording();
-  } else {
-    alert("現在、演技を撮影していません。");
-  }
-}
-
-function handleRecordingStopped() {
-  if (!chunks.length) {
-    mode = "idle";
-    return;
-  }
-
-  const mime = chunks[0].type || "video/mp4";
-  const blob = new Blob(chunks,{type:mime});
-  chunks = [];
-
-  if (blob.size < 5000) {
-    mode = "idle";
-    setProcess("映像が短いため分析できません");
-    return;
-  }
-
-  // AI分析と再生タイマーを並行して開始
-  analyzeVideo(blob);
-  startFiveSecondTimer(blob);
-}
-
-/* 5秒後の再生 */
-
-function startFiveSecondTimer(blob) {
-  if (timerId) clearInterval(timerId);
-
-  const start = Date.now();
-
-  setProcess("5秒後にスロー再生します");
-  setStatus("再生準備中",true);
-
-  timerId = setInterval(()=>{
-    if (!active) {
-      clearInterval(timerId);
-      timerId = null;
-      return;
-    }
-
-    const elapsed = (Date.now()-start)/1000;
-    const remain = Math.max(0,5-elapsed);
-
-    $("countdown").textContent = remain.toFixed(1)+"秒";
-    setProgress(elapsed/5*100);
-
-    if (remain <= 0) {
-      clearInterval(timerId);
-      timerId = null;
-      playSlowVideo(blob);
-    }
-  },50);
-}
-
-function playSlowVideo(blob) {
-  if (replayURL) URL.revokeObjectURL(replayURL);
-
-  replayURL = URL.createObjectURL(blob);
-  replayVideo.src = replayURL;
-  replayVideo.playbackRate = Number($("speed").value);
-  replayVideo.controls = true;
-
-  $("replayPlaceholder").style.display = "none";
-  $("replayStatus").textContent = "スロー再生中";
-
-  mode = "playing";
-  setStatus("スロー再生中",true);
-  setProcess("自分の演技を確認しましょう");
-  setProgress(100);
-
-  replayVideo.play().catch(()=>{
-    setProcess("再生ボタンを押してください");
-  });
-}
-
-replayVideo.addEventListener("ended",()=>{
-  if (!active) return;
-
-  $("replayStatus").textContent = "再生完了";
-  setProcess("次の演技を待っています");
-  setStatus("待機中",true);
-
-  mode = "idle";
-  previousFrame = null;
-  motionCount = 0;
-  stillSince = null;
-
-  $("countdown").textContent = "--";
-  setProgress(0);
-});
-
-/* Gemini動画分析 */
-
-async function analyzeVideo(blob) {
-  try {
-    setAIStatus("AI分析中...");
-
-    if (blob.size > MAX_VIDEO_SIZE) {
-      throw new Error("動画サイズが大きすぎます。短い演技で再試行してください。");
-    }
-
-    const base64 = await blobToBase64(blob);
-    const skill = $("skill").value;
-    const mime = blob.type.split(";")[0];
-
-    const prompt = `
-あなたは中学校体育のマット運動を専門とする体育指導者です。
-
-添付された動画について、以下の技を分析してください。
-
-【対象の技】
-${skill}
-
-【対象】
-中学生
-
-【分析の方針】
-・技に応じた運動のポイントで評価してください。
-・映像で実際に確認できる動きだけを評価してください。
-・できている点を必ず探してください。
-・改善点は優先順位の高いものを最大2つにしてください。
-・中学生に伝わる具体的で短い言葉を使ってください。
-・人格や運動能力を否定しないでください。
-・確認できないことを推測で補わないでください。
-・危険な動きがあれば安全面を優先してください。
-・技が映っていない場合は無理に評価しないでください。
-
-【技ごとの観点の例】
-前転：顎の引き方、後頭部から背中への接地、回転、起き上がり。
-後転：手の位置、顎の引き方、両手での押し、回転。
-開脚系：脚の開き、膝の伸展、手の着き方。
-倒立：手の位置、肩の押し、身体の一直線性、バランス。
-側方倒立回転：手の順番、脚の開き、身体の向き、着地。
-ロンダート：助走、手の着き方、身体の回転、両足着地。
-
-【JSON形式で回答】
-{
- "good":["よかったところ"],
- "improve":["改善ポイント"],
- "summary":"励ましの短い言葉",
- "visible":true,
- "safety":false
-}
-
-goodとimproveはそれぞれ最大2項目。
-visibleは技を確認できる場合true。
-safetyは安全上の注意が必要な場合true。
-JSON以外の文章は出力しないでください。
-`;
-
-    const response = await fetch(
-      API_URL+model+":generateContent",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-goog-api-key":apiKey
-        },
-        body:JSON.stringify({
-          contents:[{
-            role:"user",
-            parts:[
-              {text:prompt},
-              {
-                inline_data:{
-                  mime_type:mime,
-                  data:base64
-                }
-              }
-            ]
-          }],
-          generationConfig:{
-            responseMimeType:"application/json",
-            temperature:0.3,
-            maxOutputTokens:800
-          }
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error?.message || "Gemini APIとの通信に失敗しました。"
-      );
-    }
-
-    const text = data.candidates?.[0]?.content?.parts
-      ?.map(p=>p.text || "").join("");
-
-    if (!text) {
-      throw new Error("AIから回答がありませんでした。");
-    }
-
-    const result = JSON.parse(
-      text.replace(/```json|```/g,"").trim()
-    );
-
-    if (result.visible === false) {
-      showAdvice(
-        ["技の動きを確認できませんでした。"],
-        ["カメラの位置や明るさを調整して、もう一度演技してください。"]
-      );
-    } else {
-      showAdvice(result.good,result.improve);
-    }
-
-    $("summary").textContent = result.summary ?
-      "💡 "+result.summary : "";
-
-    $("safetyWarning").textContent = result.safety ?
-      "⚠ 安全に関する確認が必要です。先生と一緒に映像を確認してください。" : "";
-
-    setAIStatus("分析完了");
-
-  } catch(e) {
-    console.error(e);
-    setAIStatus("分析エラー");
-    showAdvice(
-      ["AI分析を完了できませんでした。"],
-      [e.message]
-    );
-  }
-}
-
-function showAdvice(good,improve) {
-  renderList("goodAdvice",good);
-  renderList("improveAdvice",improve);
-}
-
-function renderList(id,items) {
-  const el = $(id);
-  el.innerHTML = "";
-
-  if (!Array.isArray(items) || !items.length) {
-    el.textContent = "映像から判断できませんでした。";
-    el.className = "empty-advice";
-    return;
-  }
-
-  const ul = document.createElement("ul");
-
-  items.slice(0,2).forEach(item=>{
-    const li = document.createElement("li");
-    li.textContent = String(item);
-    ul.appendChild(li);
-  });
-
-  el.appendChild(ul);
-  el.className = "";
-}
-
-function blobToBase64(blob) {
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = ()=>{
-      resolve(String(reader.result).split(",")[1]);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
-/* 一時停止 */
-
-function pauseCamera() {
-  if (!active) return;
-
-  paused = !paused;
-
-  if (paused) {
-    if (recording) finishRecording();
-
-    setStatus("一時停止中");
-    $("pauseButton").textContent = "▶ 再開";
-    $("motionStatus").textContent = "動作検出：停止";
-
-  } else {
-    setStatus("撮影中",true);
-    $("pauseButton").textContent = "Ⅱ 一時停止";
-    $("motionStatus").textContent = "動作検出：待機中";
-
-    previousFrame = null;
-    motionCount = 0;
-    detectMotion();
-  }
-}
-
-/* 終了 */
 
 function stopCamera() {
-  active = false;
-  paused = false;
+  detecting = false;
+  clearInterval(detectorTimer);
+  clearTimeout(quietTimer);
 
-  if (detectionFrame) cancelAnimationFrame(detectionFrame);
-  if (timerId) {
-    clearInterval(timerId);
-    timerId = null;
-  }
-
-  if (recording && recorder && recorder.state !== "inactive") {
-    recording = false;
+  if (recorder && recorder.state !== "inactive") {
+    isManual = false;
     recorder.stop();
   }
 
   if (stream) {
-    stream.getTracks().forEach(t=>t.stop());
-    stream = null;
+    stream.getTracks().forEach(t => t.stop());
   }
 
-  cameraVideo.srcObject = null;
+  stream = null;
+  camera.srcObject = null;
 
-  $("cameraPlaceholder").style.display = "flex";
-  $("liveLabel").style.display = "none";
-  $("liveStatus").textContent = "カメラ未起動";
-  $("motionStatus").textContent = "動作検出：停止";
+  $("liveBadge").classList.add("hidden");
+  $("startBtn").disabled = false;
+  $("stopBtn").disabled = true;
+  $("manualBtn").disabled = true;
 
-  $("startButton").disabled = false;
-  $("manualButton").disabled = true;
-  $("pauseButton").disabled = true;
-  $("stopButton").disabled = true;
-  $("pauseButton").textContent = "Ⅱ 一時停止";
-
-  mode = "idle";
-  recording = false;
-
-  setStatus("終了");
-  setProcess("撮影を終了しました");
-  setProgress(0);
-  $("countdown").textContent = "--";
-
-  replayVideo.pause();
-
-  if (replayURL) {
-    URL.revokeObjectURL(replayURL);
-    replayURL = null;
-  }
-
-  replayVideo.removeAttribute("src");
-  replayVideo.load();
-
-  $("replayPlaceholder").style.display = "flex";
-  $("replayStatus").textContent = "待機中";
+  status("カメラを停止しました。", "warn");
 }
 
-/* 初期化 */
+$("startBtn").onclick = startCamera;
+$("stopBtn").onclick = stopCamera;
 
-$("speed").addEventListener("change",()=>{
-  replayVideo.playbackRate = Number($("speed").value);
-});
+function startDetector() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 96;
+  canvas.height = 54;
 
-$("facing").addEventListener("change",()=>{
-  if (active) {
-    alert("カメラの向きを変更するには撮影を終了してください。");
+  const ctx = canvas.getContext("2d", {willReadFrequently:true});
+
+  detecting = true;
+
+  detectorTimer = setInterval(() => {
+    if (!detecting || camera.readyState < 2) return;
+
+    ctx.drawImage(camera, 0, 0, 96, 54);
+
+    const data = ctx.getImageData(0, 0, 96, 54).data;
+    let diff = 0;
+
+    if (lastFrame) {
+      for (let i = 0; i < data.length; i += 16) {
+        diff += Math.abs(data[i] - lastFrame[i])
+          + Math.abs(data[i+1] - lastFrame[i+1])
+          + Math.abs(data[i+2] - lastFrame[i+2]);
+      }
+
+      diff /= (data.length / 16) * 3;
+    }
+
+    lastFrame = new Uint8ClampedArray(data);
+
+    const threshold = {
+      low: 24,
+      medium: 16,
+      high: 10
+    }[$("sensitivity").value];
+
+    if (diff > threshold) {
+      motionScore++;
+      lastMotionAt = Date.now();
+
+      if (!motionActive && motionScore >= 2) {
+        beginAutoClip();
+      }
+
+      if (motionActive) {
+        clearTimeout(quietTimer);
+        quietTimer = null;
+      }
+
+    } else {
+      motionScore = Math.max(0, motionScore - 1);
+
+      if (motionActive && Date.now() - lastMotionAt > 1200 && !quietTimer) {
+        quietTimer = setTimeout(() => {
+          quietTimer = null;
+          finishClip();
+        }, 250);
+      }
+    }
+
+  }, 180);
+}
+
+function supportedMime() {
+  return [
+    "video/mp4;codecs=h264",
+    "video/mp4",
+    "video/webm;codecs=vp9",
+    "video/webm;codecs=vp8",
+    "video/webm"
+  ].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
+}
+
+function beginAutoClip() {
+  if (!stream || (recorder && recorder.state !== "inactive")) return;
+
+  motionActive = true;
+  isManual = false;
+  chunks = [];
+  clipStartedAt = Date.now();
+
+  const mime = supportedMime();
+
+  try {
+    recorder = new MediaRecorder(stream, mime ? {mimeType:mime} : undefined);
+  } catch (e) {
+    motionActive = false;
+    status("この端末の録画形式に対応していません。Safariを最新版にしてください。", "err");
+    return;
   }
+
+  recorder.ondataavailable = e => {
+    if (e.data && e.data.size) chunks.push(e.data);
+  };
+
+  recorder.onstop = handleClipReady;
+  recorder.start(500);
+
+  status("演技を記録中です。動きが止まると記録を終了します。", "good");
+}
+
+function finishClip() {
+  if (!recorder || recorder.state === "inactive") return;
+
+  motionActive = false;
+  motionScore = 0;
+
+  try {
+    recorder.stop();
+  } catch {}
+}
+
+$("manualBtn").onclick = () => {
+  if (!stream) return;
+
+  if (isManual && recorder && recorder.state !== "inactive") {
+    isManual = false;
+    finishClip();
+    return;
+  }
+
+  if (recorder && recorder.state !== "inactive") {
+    status("自動記録中です。", "warn");
+    return;
+  }
+
+  beginAutoClip();
+
+  if (recorder && recorder.state !== "inactive") {
+    isManual = true;
+    status("手動記録中です。終了するにはもう一度このボタンを押してください。", "good");
+  }
+};
+
+function handleClipReady() {
+  const type = recorder?.mimeType || "video/webm";
+
+  currentBlob = new Blob(chunks, {type});
+  chunks = [];
+
+  if (currentBlob.size < 12000) {
+    status("演技を十分に記録できませんでした。もう一度試してください。", "warn");
+    return;
+  }
+
+  if (clipUrl) URL.revokeObjectURL(clipUrl);
+
+  clipUrl = URL.createObjectURL(currentBlob);
+
+  playback.src = clipUrl;
+  playback.classList.remove("hidden");
+  playback.playbackRate = .5;
+
+  $("analyzeBtn").disabled = false;
+  $("discardBtn").disabled = false;
+
+  status("演技を記録しました。5秒後に0.5倍速で再生します。", "good");
+
+  setTimeout(() => {
+    if (playback.src === clipUrl) {
+      playback.currentTime = 0;
+      playback.play().catch(() => {});
+    }
+  }, 5000);
+}
+
+$("analyzeBtn").onclick = async () => {
+  if (!currentBlob) return;
+
+  const token = sessionStorage.getItem("matCoachToken");
+
+  if (!token) {
+    status("先に先生用の利用コードを設定してください。", "warn");
+    return;
+  }
+
+  $("analyzeBtn").disabled = true;
+
+  status("動画を送信し、Geminiが分析しています。少しお待ちください。");
+
+  const fd = new FormData();
+
+  const ext = currentBlob.type.includes("mp4") ? "mp4"
+    : currentBlob.type.includes("quicktime") ? "mov" : "webm";
+
+  fd.append("video", currentBlob, `mat-exercise.${ext}`);
+  fd.append("technique", $("technique").value);
+  fd.append("grade", $("grade").value);
+  fd.append("notes", $("notes").value);
+
+  try {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {"x-app-token": token},
+      body: fd
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "分析に失敗しました。");
+    }
+
+    showAnalysis(data.analysis);
+
+    status("AI分析が完了しました。内容を先生と一緒に確認してください。", "good");
+
+  } catch (e) {
+    status(e.message, "err");
+
+  } finally {
+    $("analyzeBtn").disabled = false;
+  }
+};
+
+function showAnalysis(a) {
+  $("resultArea").classList.remove("hidden");
+
+  $("observation").innerHTML = "<h3>演技の様子</h3><p></p>";
+
+  $("observation").querySelector("p").textContent =
+    a.technique_observation || "映像から十分に確認できませんでした。";
+
+  const list = (id, title, items) => {
+    const box = $(id);
+    box.innerHTML = "";
+
+    const h = document.createElement("h3");
+    h.textContent = title;
+    box.append(h);
+
+    const ul = document.createElement("ul");
+
+    (items?.length ? items : ["特にありません。"]).forEach(t => {
+      const li = document.createElement("li");
+      li.textContent = t;
+      ul.append(li);
+    });
+
+    box.append(ul);
+  };
+
+  list("goodPoints", "よかったところ", a.good_points);
+  list("improvements", "次に意識するポイント", a.improvements);
+
+  $("safety").classList.toggle("hidden", !a.safety_note);
+  $("safety").innerHTML = "<h3>安全について</h3><p></p>";
+  $("safety").querySelector("p").textContent = a.safety_note || "";
+
+  $("confidence").textContent =
+    "AIの判定の確かさ：" +
+    ({high:"高め", medium:"中程度", low:"低め"}[a.confidence] || "低め") +
+    (a.cannot_judge_reason ? "。判定できない理由：" + a.cannot_judge_reason : "") +
+    "。AIの助言は参考情報です。";
+
+  if (!a.recognized) {
+    status("技を十分に判定できませんでした。撮影位置や画角を調整して再試行してください。", "warn");
+  }
+}
+
+function discardClip() {
+  currentBlob = null;
+
+  if (clipUrl) URL.revokeObjectURL(clipUrl);
+
+  clipUrl = null;
+  playback.pause();
+  playback.removeAttribute("src");
+  playback.load();
+  playback.classList.add("hidden");
+
+  $("analyzeBtn").disabled = true;
+  $("discardBtn").disabled = true;
+  $("resultArea").classList.add("hidden");
+
+  status("動画を破棄しました。");
+}
+
+$("discardBtn").onclick = discardClip;
+
+window.addEventListener("beforeunload", () => {
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (clipUrl) URL.revokeObjectURL(clipUrl);
 });
 
-$("skill").addEventListener("change",()=>{
-  $("summary").textContent = "";
-  $("safetyWarning").textContent = "";
-});
-
-window.addEventListener("beforeunload",()=>{
-  if (stream) stream.getTracks().forEach(t=>t.stop());
-  if (replayURL) URL.revokeObjectURL(replayURL);
-});
-
-setStatus("待機中");
-setAIStatus(apiKey ? "APIキー設定済み" : "接続未設定");
-
+if (!navigator.mediaDevices?.getUserMedia) {
+  status("このブラウザではカメラを利用できません。HTTPS接続のSafariをご利用ください。", "err");
+}
 </script>
 </body>
 </html>
